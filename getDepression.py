@@ -17,7 +17,7 @@ def getDepression(dem, flow_direction, flow_direction_parent, cellSize):
     vca = np.zeros((pit_count,1),dtype = float)#volume to contributing area ratio (hours)
     volume = np.zeros((pit_count,1),dtype = float)#cubic meters
     filledVolume = np.zeros((pit_count,1),dtype = float)#cubic meters
-    cellOverflowInto = np.int32(np.zeros((pit_count,1),dtype = float))#cell index of overflow location
+    cellOverflowInto = np.int32(np.zeros((pit_count,2),dtype = float))#cell index of overflow location
     
     #Pits must be identified in the pit matrix in order to return the 
     #correct pit ID that each pit flows into (if not, many of these pits will 
@@ -54,8 +54,8 @@ def getDepression(dem, flow_direction, flow_direction_parent, cellSize):
             i = i + 1
            
         cellIndexes[p] = np.delete(cellIndexes[p],range(j+1,chunk),axis = 0) #Delete Empty or NaN array 
-        #cellIndexes[0][5:np.size(cellIndexes[0])]
-        #areaCellCount[p] = j
+        cellIndexes[p] = cellIndexes[p].astype(int)
+        areaCount[p] = j
     
     
     #EDGE PITCELL
@@ -106,8 +106,41 @@ def getDepression(dem, flow_direction, flow_direction_parent, cellSize):
                         l = l + 1
         pairs[p] = np.delete(pairs[p],range(l,np.shape(pairs[p])[0]),axis = 0)
         
+        interior_rc =pairs[p][:,0:2]
+        exterior_rc = pairs[p][:,2:4]
+        #print('interior_rc',interior_rc,'exterior_rc',exterior_rc)
+        interiorDEM = dem[interior_rc[:,0],interior_rc[:,1]]
+        exteriorDEM = dem[exterior_rc[:,0],exterior_rc[:,1]]
+        #print('exteriorDEM',exteriorDEM)
+        #print('interiorDEM',interiorDEM)
         
-                
+        cmax = np.empty(np.shape(interiorDEM))
+        for i in range(0,len(interiorDEM)):
+            cmax[i] = np.max([exteriorDEM[i],interiorDEM[i]])
+        #print('MAX',cmax)
+        [val,cord] = [np.min(cmax), np.argmin(cmax)] 
+        #print([val,cord])
+        spilloverElevation[p] = val
+        cellOverflowInto[p] = exterior_rc[cord]
+        
+        #print(dem[cellIndexes[p].astype(int)])
+        lessThans = [dem[cellIndexes[p][:,0],cellIndexes[p][:,1]] <= spilloverElevation[p]] 
+        lessThans = cellIndexes[p][lessThans]
+        #print('lessThans',lessThans)
+        #print('DEM',dem[lessThans[:,0],lessThans[:,1]])
+        volume[p] = np.sum((spilloverElevation[p] - dem[lessThans[:,0],lessThans[:,1]])*cellSize*cellSize)
+        #print('loop', p, 'VOLUME',volume)
+        #print('pits',pits)
+        #print('Spill',spilloverElevation)
+        
+        filledVolume[p] = 0
+        vca[p] = volume[p]/((cellSize^2)*areaCount[p])
+        print(vca[p])
+        
+        if vca[p] < 0:
+            vca[p] = np.infty
+        
+        
 dem = np.array([[4, 7, 3, 7, 8, 8, 5, 2, 9, 8],
  [0, 8, 2, 4, 6, 4, 7, 3, 8, 5],
  [4, 5, 9, 9, 8, 3, 6, 4, 6, 6],
