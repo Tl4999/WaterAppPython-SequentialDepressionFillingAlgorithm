@@ -47,14 +47,13 @@ def getDepression(dem, flow_direction, flow_direction_parent, cellSize):
                 pits[uparent] = pID 
                 k = j + np.size(parent)
                 if k > (chunk-1):
-                    cellIndexes[p].append(np.empty((chunk,2), dtype = int))
+                    cellIndexes[p].append(np.empty((chunk,2),dtype= object))
                     chunk += 50 
                 cellIndexes[p][j+1:k+1] = np.swapaxes(uparent,0,1)
                 j = k  
             i = i + 1
            
         cellIndexes[p] = np.delete(cellIndexes[p],range(j+1,chunk),axis = 0) #Delete Empty or NaN array 
-        print(cellIndexes)
         #cellIndexes[0][5:np.size(cellIndexes[0])]
         #areaCellCount[p] = j
     
@@ -65,34 +64,50 @@ def getDepression(dem, flow_direction, flow_direction_parent, cellSize):
         j = 0
         i = 0
         chunk = 50
-        Indexes = np.empty((chunk,2), dtype = object) 
+        edgeIndexes = np.empty((chunk,2), dtype = object) 
         
-        Indexes[0][0] = edgePitCell[0][p]
-        Indexes[0][1] = edgePitCell[1][p]
+        edgeIndexes[0][0] = edgePitCell[0][p]
+        edgeIndexes[0][1] = edgePitCell[1][p]
                 
         while i <= j:
-            parent = flow_direction_parent[Indexes[i][0]][Indexes[i][1]]
+            parent = flow_direction_parent[edgeIndexes[i][0]][edgeIndexes[i][1]]
             if len(parent) != 0:
                 uparent = np.unravel_index(parent,np.shape(dem))
                 pits[uparent] = edgeID 
                 k = j + np.size(parent)
                 if k > (chunk-1):
-                    Indexes.append(np.empty((chunk,2), dtype = int))
+                    edgeIndexes.append(np.empty((chunk,2), dtype = object))
                     chunk += 50 
-                Indexes[j+1:k+1] = np.swapaxes(uparent,0,1)
+                edgeIndexes[j+1:k+1] = np.swapaxes(uparent,0,1)
                 j = k  
-            i = i + 1
-    
+            i = i + 1   
     
     indexes = indexes_list = list(range(0,np.size(flow_direction)))
     indexes = np.reshape(indexes_list,np.shape(flow_direction))
     pairs = [ [] for _ in range(pit_count)] #create a list within an list
+    [numrows, numcols] = np.shape(dem)
     for p in range(0,np.size(cellIndexes)):
-        print(np.shape(cellIndexes))
-        #pairs[p] = np.empty(*8,4])
-        #print(pairs[0])
-
-               
+        pairs[p] = np.empty((np.shape(cellIndexes)[0]*8,4), dtype = int)
+        l = 0
+        for i in range(0,np.shape(cellIndexes[p])[0]): #Walk Through Indices To Check
+            [r, c] = [cellIndexes[p][i][0],cellIndexes[p][i][1]]
+           # print('cellIndexes[p][i]',cellIndexes[p][i])
+           # print('Loop', i,'r&c',[r,c])
+            for x in range(-1,2):
+                for y in range(-1,2):
+                    if x == 0 and y == 0:
+                        continue #skip the center cell
+                    if (r+y) >= (numrows-1) or (r+y)<0 or (c+x) >= (numcols-1) or (c+x)< 0:
+                        continue #skip neighbors outside of the dem range
+                    if np.isnan(dem[r+y][c+x]):
+                        continue
+                    if pits[r+y][c+x] != pits[r][c]:
+                        pairs[p][l] = [r,c,r+y,c+x]
+                        l = l + 1
+        pairs[p] = np.delete(pairs[p],range(l,np.shape(pairs[p])[0]),axis = 0)
+        
+        
+                
 dem = np.array([[4, 7, 3, 7, 8, 8, 5, 2, 9, 8],
  [0, 8, 2, 4, 6, 4, 7, 3, 8, 5],
  [4, 5, 9, 9, 8, 3, 6, 4, 6, 6],
