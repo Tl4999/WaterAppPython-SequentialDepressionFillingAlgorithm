@@ -2,6 +2,7 @@ import numpy as np
 def flow_direction(dem):
     import math 
     import numpy as np
+    import seaborn as sns
     #Generate the D8 flow direction of water across the DEM surface. 
     #Input:  dem - Matrix of elevation. Has dimensions MxN 
     #Output: flow_direction - for each cell, the flow_direcion matric specifies 
@@ -81,7 +82,7 @@ def flow_direction(dem):
         
         flow_direction[r][c]= indices[rol][col]
     print(flow_direction)
-        
+    h = sns.heatmap(flow_direction, annot = True, cmap='YlGnBu')    
         #print(test1)
         #print('row col',[r,c],end=' ')
         #print('value',dem[r][c],end=' ')
