@@ -60,16 +60,11 @@ def flow_direction(dem):
                 
         a = np.ones((maxr-minr+1, maxc-minc+1), dtype = float)*dem[r][c]
         b = dem[minr:maxr+1,minc:maxc+1]
-        #print('i',i,'row',r,'col',c)
-        #print('wminr', wminr, 'wmaxr',wmaxr)
-        #print('wminc',wminc,'wmaxc',wmaxc)
         dwd = (a-b)/weights[wminr:wmaxr+1,wminc:wmaxc+1]
         [rol, col] = np.unravel_index(np.nanargmax(dwd),dwd.shape)
         dwdMax = dwd[rol,col]
         
         if dwdMax <= 0:
-           #print('maxr',maxr,'minr',minr,'minc',minc,'minr', minr )
-           #print('dwdMax',dwdMax,'dwd',dwd)
            if r == maxr or r== minr or c == minc or c == maxc:
                flow_direction[r][c] = -2
                continue
@@ -78,26 +73,15 @@ def flow_direction(dem):
                 continue
     
         indices = indexes[minr:maxr+1,minc:maxc+1]
-        #print(indices)
+        
         
         flow_direction[r][c]= indices[rol][col]
-    h = sns.heatmap(flow_direction, annot = True, cmap='YlGnBu')
-    print(i)
-        
-        #print(test1)
-        #print('row col',[r,c],end=' ')
-        #print('value',dem[r][c],end=' ')
-        #print('minr', minr,end=' ')
-        #print('maxr', maxr)
-        #print('b_r',b_r)
-        #print('b',b)
-        #print('a',a)
+    sns.heatmap(flow_direction, annot = True, cmap='YlGnBu')
+    #sns.heatmap(flow_direction, cmap='YlGnBu')
     return flow_direction
 
 fileName = 'CedarUpper_30m.tif'
 from dem import elevationfile
 dem,cellSize = elevationfile(fileName)
-plt.imshow(dem)
-plt.show()
+dem = np.array(dem[230:241][:,540:551])
 flow_direction(dem)
-
