@@ -9,9 +9,6 @@ def d8FlowDirectionParents(dem):
 
     FlowDirectionParent = np.empty(np.shape(flow_dir_var), dtype = object)
     for i in np.ndindex(FlowDirectionParent.shape): FlowDirectionParent[i] = []
-
- 
-
     for i in range(0, np.shape(FlowDirectionParent)[0]):
         for j in range(0,np.shape(FlowDirectionParent)[1]):
             if np.isnan(flow_dir_var[i][j]) or (flow_dir_var[i][j] < 0) :
