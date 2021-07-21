@@ -1,4 +1,3 @@
-
 def elevationfile(fileName):
     import rasterio
     import georasters as gr
@@ -15,5 +14,3 @@ def elevationfile(fileName):
     for i in range(0,np.shape(file)[0]):
         dem[int(file[i][0])][int(file[i][1])] = file[i][2]
     return dem,cellSize
-      
-dem = elevationfile('cedarUpper_30m.tif')
