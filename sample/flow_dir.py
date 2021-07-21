@@ -79,9 +79,3 @@ def flow_direction(dem):
     sns.heatmap(flow_direction, annot = True, cmap='YlGnBu')
     #sns.heatmap(flow_direction, cmap='YlGnBu')
     return flow_direction
-
-fileName = 'CedarUpper_30m.tif'
-from dem import elevationfile
-dem,cellSize = elevationfile(fileName)
-dem = np.array(dem[230:241][:,540:551])
-flow_direction(dem)
