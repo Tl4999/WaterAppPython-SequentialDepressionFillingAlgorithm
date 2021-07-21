@@ -96,7 +96,7 @@ def flow_direction(dem):
 
 fileName = 'CedarUpper_30m.tif'
 from dem import elevationfile
-dem = elevationfile(fileName)
+dem,cellSize = elevationfile(fileName)
 plt.imshow(dem)
 plt.show()
 flow_direction(dem)
