@@ -29,6 +29,6 @@ dem = np.array([[4, 7, 3, 7, 8, 8, 5, 2, 9, 8],
   [4, 3, 6, 9, 1, 3, 0, 8, 1, 5],
   [0, 1, 3, 7, 1, 9, 9, 4, 2, 8],
   [1, 4, 4, 6, 4, 4, 8, 9, 5, 9]])
-flow_direction_parent(dem)
+d8FlowDirectionParents(dem)
        
                                          
