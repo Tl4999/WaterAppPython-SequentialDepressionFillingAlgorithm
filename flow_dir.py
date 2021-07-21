@@ -1,4 +1,5 @@
 import numpy as np
+import matplotlib.pyplot as plt
 def flow_direction(dem):
     import math 
     import numpy as np
@@ -25,7 +26,6 @@ def flow_direction(dem):
     #Mark the flow direction w indexes.    
     indexes_list = list(range(0,np.size(flow_direction)))
     indexes = np.reshape(indexes_list,np.shape(flow_direction))
-    print(indexes)
     [numrows, numcols] = np.shape(dem)
     #fprintf('\nProcessing flow dir)
     
@@ -81,8 +81,9 @@ def flow_direction(dem):
         #print(indices)
         
         flow_direction[r][c]= indices[rol][col]
-    print(flow_direction)
-    h = sns.heatmap(flow_direction, annot = True, cmap='YlGnBu')    
+    h = sns.heatmap(flow_direction, annot = True, cmap='YlGnBu')
+    print(i)
+        
         #print(test1)
         #print('row col',[r,c],end=' ')
         #print('value',dem[r][c],end=' ')
@@ -93,17 +94,10 @@ def flow_direction(dem):
         #print('a',a)
     return flow_direction
 
-dem = np.array([[4, 7, 3, 7, 8, 8, 5, 2, 9, 8],
- [0, 8, 2, 4, 6, 4, 7, 3, 8, 5],
- [4, 5, 9, 9, 8, 3, 6, 4, 6, 6],
- [6, 1, 0, 5, 7, 7, 5, 8, 8, 7],
- [9, 9, 3, 5, 9, 7, 6, 9, 7, 2],
- [0, 2, 8, 0, 4, 0, 1, 2, 8, 7],
- [6, 9, 2, 9, 5, 5, 9, 1, 5, 9],
- [4, 3, 6, 9, 1, 3, 0, 8, 1, 5],
- [0, 1, 3, 7, 1, 9, 9, 4, 2, 8],
-[1, 4, 4, 6, 4, 4, 8, 9, 5, 9]])
-        
-#dem = np.random.randint(10, size = (10,10))
+fileName = 'CedarUpper_30m.tif'
+from dem import elevationfile
+dem = elevationfile(fileName)
+plt.imshow(dem)
+plt.show()
 flow_direction(dem)
 
