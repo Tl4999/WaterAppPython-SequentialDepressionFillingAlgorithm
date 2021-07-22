@@ -23,7 +23,7 @@ def getDepression(dem, flow_direction, flow_direction_parent, cellSize):
     #flow into yet unidentifed pits that have ID 0)
     
     #Fill out the pit ID image/matrix
-    pits[np.isnan(dem)] = 0 #if pits' element == NaN change the cell to 0 
+    pits[~np.isnan(dem)] = 0 #if pits' element == NaN change the cell to 0 
     pits[pitCell] = pitID
     pits[edgePitCell] = edgePitId
     
