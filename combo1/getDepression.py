@@ -30,7 +30,6 @@ def getDepression(dem, flow_direction, flow_direction_parent, cellSize):
     cellIndexes = [ [] for _ in range(pit_count)] #create a list within an list
 
     for p in range(0,np.shape(pitCell)[1]):
-        print(p)
         pID = p + 1
         j = 0
         i = 0
@@ -78,8 +77,8 @@ def getDepression(dem, flow_direction, flow_direction_parent, cellSize):
                 uparent = np.unravel_index(parent,np.shape(dem))
                 pits[uparent] = edgeID 
                 k = j + np.size(parent)
-                if k > (np.shape(edgeIndexes[p])[0]-1):
-                    edgeIndexes[p] = np.append(edgeIndexes[p],np.empty((chunk,2),dtype= object), axis = 0)
+                if k > (np.shape(edgeIndexes)[0]-1):
+                    edgeIndexes = np.append(edgeIndexes,np.empty((chunk,2),dtype= object), axis = 0)
                 edgeIndexes[j+1:k+1] = np.swapaxes(uparent,0,1)
                 j = k  
             i = i + 1   
@@ -149,7 +148,7 @@ def getDepression(dem, flow_direction, flow_direction_parent, cellSize):
 fileName = 'CedarUpper_30m.tif'
 from dem import elevationfile
 dem,cellSize = elevationfile(fileName)
-#dem = np.array(dem[230:241][:,540:551])
+dem = np.array(dem[230:241][:,540:551])
 
 from flow_dir import flow_direction
 flow_direction = flow_direction(dem)
