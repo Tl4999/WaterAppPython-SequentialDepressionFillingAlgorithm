@@ -30,6 +30,7 @@ def getDepression(dem, flow_direction, flow_direction_parent, cellSize):
     cellIndexes = [ [] for _ in range(pit_count)] #create a list within an list
 
     for p in range(0,np.shape(pitCell)[1]):
+        print(p)
         pID = p + 1
         j = 0
         i = 0
@@ -45,14 +46,17 @@ def getDepression(dem, flow_direction, flow_direction_parent, cellSize):
                 uparent = np.unravel_index(parent,np.shape(dem))
                 pits[uparent] = pID 
                 k = j + np.size(parent)
-                if k > (chunk-1):
-                    cellIndexes[p].append(np.empty((chunk,2),dtype= object))
-                    chunk += 50 
+                #print('kbefore',k,'jbefore',j,'chunkbefore',chunk-1)
+                if k > (np.shape(cellIndexes[p])[0]-1):
+                    cellIndexes[p] = np.append(cellIndexes[p],np.empty((chunk,2),dtype = object),axis =0)  
                 cellIndexes[p][j+1:k+1] = np.swapaxes(uparent,0,1)
                 j = k  
             i = i + 1
-           
-        cellIndexes[p] = np.delete(cellIndexes[p],range(j+1,chunk),axis = 0) #Delete Empty or NaN array 
+        
+        #print('sizebefore',np.shape(cellIndexes[p]))
+        cellIndexes[p] = np.delete(cellIndexes[p],range(j+1,np.shape(cellIndexes[p])[0]),axis = 0) #Delete Empty or NaN array 
+        #print('cellIndexes',cellIndexes[p])
+        #print('length', np.shape(cellIndexes[p])[0], 'j+1',j+1, 'size', np.shape(cellIndexes[p]))
         cellIndexes[p] = cellIndexes[p].astype(int)
         areaCount[p] = j
     
@@ -74,9 +78,8 @@ def getDepression(dem, flow_direction, flow_direction_parent, cellSize):
                 uparent = np.unravel_index(parent,np.shape(dem))
                 pits[uparent] = edgeID 
                 k = j + np.size(parent)
-                if k > (chunk-1):
-                    edgeIndexes.append(np.empty((chunk,2), dtype = object))
-                    chunk += 50 
+                if k > (np.shape(edgeIndexes[p])[0]-1):
+                    edgeIndexes[p] = np.append(edgeIndexes[p],np.empty((chunk,2),dtype= object), axis = 0)
                 edgeIndexes[j+1:k+1] = np.swapaxes(uparent,0,1)
                 j = k  
             i = i + 1   
@@ -86,7 +89,7 @@ def getDepression(dem, flow_direction, flow_direction_parent, cellSize):
     pairs = [ [] for _ in range(pit_count)] #create a list within an list
     [numrows, numcols] = np.shape(dem)
     for p in range(0,np.size(cellIndexes)):
-        pairs[p] = np.empty((np.shape(cellIndexes)[0]*8,4), dtype = int)
+        pairs[p] = np.empty((np.shape(cellIndexes[p])[0]*8,4), dtype = int)
         l = 0
         for i in range(0,np.shape(cellIndexes[p])[0]): #Walk Through Indices To Check
             [r, c] = [cellIndexes[p][i][0],cellIndexes[p][i][1]]
@@ -133,12 +136,12 @@ def getDepression(dem, flow_direction, flow_direction_parent, cellSize):
         #print('Spill',spilloverElevation)
         
         filledVolume[p] = 0
-        vca[p] = volume[p]/((cellSize^2)*areaCount[p])
-        print(vca[p])
+        vca[p] = volume[p]/((cellSize*cellSize)*areaCount[p])
+        #print(vca[p])
         
         if vca[p] < 0:
             vca[p] = np.infty
-        print(pits)
+        #print(pits)
     return pits, pairs, cellIndexes, pitID, pitCell, areaCount, spilloverElevation, vca, volume, filledVolume, cellOverflowInto
         
         
@@ -146,7 +149,7 @@ def getDepression(dem, flow_direction, flow_direction_parent, cellSize):
 fileName = 'CedarUpper_30m.tif'
 from dem import elevationfile
 dem,cellSize = elevationfile(fileName)
-dem = np.array(dem[230:241][:,540:551])
+#dem = np.array(dem[230:241][:,540:551])
 
 from flow_dir import flow_direction
 flow_direction = flow_direction(dem)
