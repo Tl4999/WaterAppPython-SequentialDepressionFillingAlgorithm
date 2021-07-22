@@ -23,7 +23,6 @@ def fillDepression(fillRainfallExcess, dem, flow_direction, pits, pairs, cellInd
         pitCell = np.array(pitCell) #Unravel_index return tupel. Turn tuple to array
                       
         while vca[firstpit] <= ((fillRainfallExcess/1000) and (idx <= max_id)):
-            #print('idx',idx,'firstpit',firstpit,'secondpit',secondpit)
             finalOrder[idx -1] = firstpit
             rainfall_excess[idx] = vca[firstpit][:]
             runoff[idx] = sum(sum(pits<0))
@@ -74,9 +73,10 @@ def fillDepression(fillRainfallExcess, dem, flow_direction, pits, pairs, cellInd
 
                 vca[secondpit] = volume[secondpit]/((cellSize*cellSize)*areaCount[secondpit]);
                 if vca[secondpit] < 0:
-                    vca[secondpit] = np.infty;
+                    vca[secondpit] = np.Inf;
+                
         
-            vca[firstpit] = np.NaN;     
+            vca[firstpit] = np.NaN;    
             cellIndexes[firstpit] = [];
             pairs[firstpit] = [];
         
@@ -102,7 +102,7 @@ flow_direction_parent = d8FlowDirectionParents(dem)
 from getDepression import getDepression
 pits, pairs, cellIndexes, pitID, pitCell, areaCount, spilloverElevation, vca, volume, filledVolume, cellOverflowInto = getDepression(dem, flow_direction, flow_direction_parent,cellSize)
 
-fillRainfallExcess = 3000
+fillRainfallExcess = 30000
 
 dem, fillPits, fillFlow_direction, fillRainfall_excess, fillRunoff, fillDem = fillDepression(fillRainfallExcess, dem, flow_direction, pits, pairs, cellIndexes, pitID, pitCell, areaCount, spilloverElevation, vca, volume, filledVolume, cellOverflowInto, cellSize)
 
