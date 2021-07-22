@@ -47,16 +47,23 @@ def flow_direction(dem):
         if r == numrows-1:
             maxr = numrows-1 
             wmaxr = 1
+            flow_direction[r][c]= -2
+            continue
         elif r == 0:
             minr = 0
             wminr = 1
-         
+            flow_direction[r][c]= -2
+            continue
         if c == numcols-1:
             maxc = numcols-1
             wmaxc = 1
+            flow_direction[r][c]= -2
+            continue
         elif c == 0:
             minc = 0
             wminc = 1
+            flow_direction[r][c]= -2
+            continue
                 
         a = np.ones((maxr-minr+1, maxc-minc+1), dtype = float)*dem[r][c]
         b = dem[minr:maxr+1,minc:maxc+1]
@@ -88,4 +95,3 @@ from dem import elevationfile
 dem,cellSize = elevationfile(fileName)
 dem = np.array(dem[230:241][:,540:551])
 var_flow_direction = flow_direction(dem)
-
