@@ -57,7 +57,7 @@ def getDepression(dem, flow_direction, flow_direction_parent, cellSize):
         #print('cellIndexes',cellIndexes[p])
         #print('length', np.shape(cellIndexes[p])[0], 'j+1',j+1, 'size', np.shape(cellIndexes[p]))
         cellIndexes[p] = cellIndexes[p].astype(int)
-        areaCount[p] = j
+        areaCount[p] = j + 1
     
     
     #EDGE PITCELL
