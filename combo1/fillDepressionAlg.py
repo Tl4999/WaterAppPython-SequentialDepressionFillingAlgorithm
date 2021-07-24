@@ -6,14 +6,15 @@ def fillDepression(fillRainfallExcess, dem, flow_direction, pits, pairs, cellInd
         #Prealllocate 
         fillDem = np.copy(dem)
         max_id = max(pitID)
+        print(max(pitID))
         rainfall_excess = np.zeros([max_id,1]) 
         times = np.zeros([max_id,1])
         finalOrder = np.empty([max_id, 1])
         finalOrder[:] = np.NaN
         runoff = np.zeros([max_id, 1])
         #Initial Value
-        rainfall_excess[0] = 0
-        runoff[0] = sum(sum(pits<0))
+        #rainfall_excess[0] = 0
+        #runoff[0] = sum(sum(pits<0))
         
         idx = 1
         
@@ -22,10 +23,14 @@ def fillDepression(fillRainfallExcess, dem, flow_direction, pits, pairs, cellInd
         
         pitCell = np.array(pitCell) #Unravel_index return tupel. Turn tuple to array
                       
-        while vca[firstpit] <= ((fillRainfallExcess/1000) and (idx <= max_id)):
+        while (vca[firstpit] <= fillRainfallExcess/1000) and (idx <= max_id):
+            print('line27',idx)
             finalOrder[idx -1] = firstpit
-            rainfall_excess[idx] = vca[firstpit][:]
-            runoff[idx] = sum(sum(pits<0))
+            #print('firstpit', firstpit, 'secondpit',secondpit, 'idx', idx)
+            rainfall_excess[idx - 1] = vca[firstpit][:]
+            #print('input',vca)
+            #print('output',rainfall_excess)
+            runoff[idx - 1] = sum(sum(pits<0))
             
             #re_ID first pit, raise/ fill first pit cells
             lessThanSpillover = [fillDem[cellIndexes[firstpit][:,0],cellIndexes[firstpit][:,1]] <= spilloverElevation[firstpit]] 
@@ -74,17 +79,21 @@ def fillDepression(fillRainfallExcess, dem, flow_direction, pits, pairs, cellInd
                 vca[secondpit] = volume[secondpit]/((cellSize*cellSize)*areaCount[secondpit]);
                 if vca[secondpit] < 0:
                     vca[secondpit] = np.Inf;
+                    
+            vca[firstpit] = np.NAN;
+            if np.nansum(vca) == 0:
+                print('line83',idx - 1)
+                break
                 
-        
-            vca[firstpit] = np.NaN;    
             cellIndexes[firstpit] = [];
             pairs[firstpit] = [];
         
             idx += 1
-        
             firstpit = np.nanargmin(vca) #indexes of the first pit (scalar)
             secondpit = int(pits[cellOverflowInto[firstpit][0]][cellOverflowInto[firstpit][1]] - 1)#indexes of the second pit (scalar)
-            
+            print('cond1', vca[firstpit])
+            print('cond2', fillRainfallExcess/1000 and (idx <= max_id) )
+
         return dem, pits, flow_direction, rainfall_excess, runoff, fillDem
         
 fileName = 'Feldun.tif'
@@ -102,7 +111,7 @@ flow_direction_parent = d8FlowDirectionParents(dem)
 from getDepression import getDepression
 pits, pairs, cellIndexes, pitID, pitCell, areaCount, spilloverElevation, vca, volume, filledVolume, cellOverflowInto = getDepression(dem, flow_direction, flow_direction_parent,cellSize)
 
-fillRainfallExcess = 30000
+fillRainfallExcess = 100000
 
 dem, fillPits, fillFlow_direction, fillRainfall_excess, fillRunoff, fillDem = fillDepression(fillRainfallExcess, dem, flow_direction, pits, pairs, cellIndexes, pitID, pitCell, areaCount, spilloverElevation, vca, volume, filledVolume, cellOverflowInto, cellSize)
 
