@@ -42,4 +42,3 @@ from d8FlowDirectionParents import d8FlowDirectionParents
 flow_direction_parent = d8FlowDirectionParents(dem)
 
 output = flowAccumulation(flow_direction, flow_direction_parent)
-
